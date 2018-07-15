@@ -16,7 +16,7 @@ from tornado.options import define, options
 
 from urls import url_patterns
 
-define("port", default=80, help="Run server on a specific port", type=int)
+define("port", default=10081, help="Run server on a specific port", type=int)
 
 
 def make_app():

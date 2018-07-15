@@ -9,11 +9,13 @@ Created on 2018年07月10日
 from web.service.main_handler import MainHandler
 from web.service.health_handler import HealthHandler
 from web.service.chatbot_handler import ChatbotHandler
+from web.service.weixin_handler import WeixinHandler
 
 
 url_patterns=[(r"/", MainHandler), 
               (r"/health", HealthHandler), 
               (r"/chat", ChatbotHandler),
+              (r"/wx", WeixinHandler),
 #               (r'/aidvoice', VoiceHandler),
              ]
 
