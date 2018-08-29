@@ -84,6 +84,15 @@ def train_nlu():
     return model_directory
 
 
+def test_nlu():
+    from rasa_nlu.model import Interpreter
+    import json
+    interpreter = Interpreter.load("./models/nlu/default/current")
+    message = "let's see some italian restaurants"
+    result = interpreter.parse(message)
+    print(json.dumps(result, indent=2))
+
+
 def run(serve_forever=True):
     interpreter = RasaNLUInterpreter("models/nlu/default/current")
     agent = Agent.load("models/dialogue", interpreter=interpreter)
@@ -95,7 +104,8 @@ def run(serve_forever=True):
 
 if __name__ == '__main__':
     # train_dialogue()
-    run()
+    # run()
+    test_nlu()
     '''
     utils.configure_colored_logging(loglevel="INFO")
 
