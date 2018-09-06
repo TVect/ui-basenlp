@@ -1,2 +1,3 @@
 tornado==4.4.1
 aiml==0.9.1
+WeRoBot==1.6.0
