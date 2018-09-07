@@ -29,4 +29,7 @@ class AliWeather:
 if __name__ == "__main__":
     weather = AliWeather()
     res = weather.query(city="杭州")
+    print("city:{}, 天气: {}, 最高温度: {}, 最低温度: {}, 风向: {}, 风力: {}"\
+          .format(res["result"]["city"], res["result"]["weather"], res["result"]["temphigh"], 
+                  res["result"]["templow"], res["result"]["winddirect"], res["result"]["windpower"]))
     print(res)
