@@ -11,5 +11,19 @@
     - slot{"requested_slot": "time"}
 * inform_time{"time": "2018-04"}
     - slot{"time": "2018-04"}
-    - action_statistic
+    - action_form_statistic
+    - export
+
+## Generated Story 4691494301847031037
+* greet
+    - utter_greet
+* request_weather{"city": "\u676d\u5dde"}
+    - slot{"city": "\u676d\u5dde"}
+    - action_weather
+    - utter_ask_morehelp
+* request_weather{"city": "\u676d\u5dde"}
+    - slot{"city": "\u676d\u5dde"}
+    - action_weather
+* goodbye
+    - utter_goodbye
     - export

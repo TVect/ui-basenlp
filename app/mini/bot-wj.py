@@ -23,5 +23,5 @@ def test_dialog():
     return agent
 
 if __name__ == "__main__":
-    test_dialog()
-    # train_dialog(use_online_learning=False)
+    # test_dialog()
+    train_dialog(use_online_learning=False)

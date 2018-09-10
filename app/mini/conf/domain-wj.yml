@@ -11,8 +11,7 @@ intents:
 
 entities:
   - disease
-  - start_time
-  - end_time
+  - time
   - city
 
 slots:
@@ -30,7 +29,9 @@ actions:
 - utter_goodbye
 - utter_did_that_help
 - utter_ask_morehelp
-- actions.ActionStatistic
+- utter_ask_disease
+- utter_ask_time
+- utter_ask_city
 - actions.ActionWeather
 - actions.StatisticFormAction
 
@@ -57,3 +58,6 @@ templates:
   
   utter_ask_city:
   - text: "请输入一个城市名"
+
+  utter_default:
+  - text: "我很懵逼...我听不懂你在说什么..."

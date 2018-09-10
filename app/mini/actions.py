@@ -9,26 +9,6 @@ from utils.weather import AliWeather
 
 ali_weather = AliWeather()
 
-class ActionStatistic(Action):
-
-    def name(self):
-        return 'action_statistic'
-
-    def run(self, dispatcher, tracker, domain):
-        disease = tracker.get_slot("disease")
-        if disease is None:
-            dispatcher.utter_message("Please input a disease")
-            return []
-
-        start_time = tracker.get_slot("start_time")
-        end_time = tracker.get_slot("end_time")
-        if (start_time is None) or (end_time is None):
-            dispatcher.utter_message("Please input a time that you want to see ")
-            return []
-        dispatcher.utter_message("wait a minute ......")
-        dispatcher.utter_message("disease: {}".format(disease))
-        return []
-
 
 class ActionWeather(Action):
     
@@ -42,10 +22,14 @@ class ActionWeather(Action):
             return []
 
         weather_info = ali_weather.query(city=city)
-        dispatcher.utter_message("city:{}, 天气: {}, 最高温度: {}, 最低温度: {}, 风向: {}, 风力: {}"\
-                                 .format(weather_info["result"]["city"], weather_info["result"]["weather"], 
-                                         weather_info["result"]["temphigh"], weather_info["result"]["templow"], 
-                                         weather_info["result"]["winddirect"], weather_info["result"]["windpower"]))
+        if weather_info:
+            dispatcher.utter_message("city:{}, 天气: {}, 最高温度: {}, 最低温度: {}, 风向: {}, 风力: {}"\
+                                     .format(weather_info["result"]["city"], weather_info["result"]["weather"], 
+                                             weather_info["result"]["temphigh"], weather_info["result"]["templow"], 
+                                             weather_info["result"]["winddirect"], weather_info["result"]["windpower"]))
+        else:
+            dispatcher.utter_message("现在信号有些不稳定，稍等一下再和我说呢")
+
         return []
 
 
@@ -67,4 +51,8 @@ class StatisticFormAction(FormAction):
 
     def submit(self, dispatcher, tracker, domain):
         dispatcher.utter_message("...... 疾病统计信息完成 ......")
-        return []
+        return_slots = []
+        slot_names = [field.slot_name for field in self.required_fields()]
+        for slot in tracker.slots:
+            return_slots.append(SlotSet(slot, None))
+        return return_slots
