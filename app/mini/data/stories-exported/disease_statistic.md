@@ -1,8 +1,8 @@
 ## story-0001
 * greet
   - utter_greet
-* symptom_statistic {"time": "2018-04", "disease": "¸ßÑªÑ¹"}
-  - slot {"time": "2018-03", "disease": "¸ßÑªÑ¹"}
+* symptom_statistic {"time": "2018-04", "disease": "ï¿½ï¿½ÑªÑ¹"}
+  - slot {"time": "2018-03", "disease": "ï¿½ï¿½ÑªÑ¹"}
   - action_form_statistic
   - utter_ask_morehelp
 * deny
@@ -11,12 +11,12 @@
 ## story-0002
 * greet
   - utter_greet
-* symptom_statistic {"time": "2018-04", "disease": "¸ßÑªÑ¹"}
-  - slot {"time": "2018-03", "disease": "¸ßÑªÑ¹"}
+* symptom_statistic {"time": "2018-04", "disease": "ï¿½ï¿½ÑªÑ¹"}
+  - slot {"time": "2018-03", "disease": "ï¿½ï¿½ÑªÑ¹"}
   - action_form_statistic
   - utter_ask_morehelp
-* symptom_statistic {"time": "2018-04", "disease": "ÐÄÔà²¡"}
-  - slot {"time": "2018-03", "disease": "ÐÄÔà²¡"}
+* symptom_statistic {"time": "2018-04", "disease": "ï¿½ï¿½ï¿½à²¡"}
+  - slot {"time": "2018-03", "disease": "ï¿½ï¿½ï¿½à²¡"}
   - action_form_statistic
   - utter_ask_morehelp
 * deny
@@ -25,13 +25,13 @@
 ## story-0003
 * greet
   - utter_greet
-* symptom_statistic {"time": "2018-04", "disease": "¸ßÑªÑ¹"}
-  - slot {"time": "2018-03", "disease": "¸ßÑªÑ¹"}
+* symptom_statistic {"time": "2018-04", "disease": "ï¿½ï¿½ÑªÑ¹"}
+  - slot {"time": "2018-03", "disease": "ï¿½ï¿½ÑªÑ¹"}
   - action_form_statistic
   - utter_ask_morehelp
-* symptom_statistic {"disease": "ÐÄÔà²¡"}
-  - slot {"disease": "ÐÄÔà²¡"}
-  - action_ask_time
+* symptom_statistic {"disease": "ï¿½ï¿½ï¿½à²¡"}
+  - slot {"disease": "ï¿½ï¿½ï¿½à²¡"}
+  - utter_ask_time
 * inform_time{"time": "2018-04"}
   - slot{"time": "2018-04"}
   - action_form_statistic
