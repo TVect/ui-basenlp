@@ -27,3 +27,19 @@
 * goodbye
     - utter_goodbye
     - export
+
+## Generated Story -1480668120387350242
+* greet
+    - utter_greet
+* symptom_statistic{"time": "2018-04", "disease": "\u9ad8\u8840\u538b"}
+    - slot{"disease": "\u9ad8\u8840\u538b"}
+    - slot{"time": "2018-04"}
+    - action_form_statistic
+    - utter_ask_morehelp
+* request_weather{"city": "\u676d\u5dde"}
+    - slot{"city": "\u676d\u5dde"}
+    - action_weather
+    - utter_ask_morehelp
+* deny
+    - utter_goodbye
+    - export

@@ -27,10 +27,7 @@ slots:
 actions:
 - utter_greet
 - utter_goodbye
-- utter_did_that_help
 - utter_ask_morehelp
-- utter_ask_disease
-- utter_ask_time
 - utter_ask_city
 - actions.ActionWeather
 - actions.StatisticFormAction
@@ -39,9 +36,6 @@ templates:
   utter_greet:
   - text: "你好啊"
   - text: "hello"
-
-  utter_did_that_help:
-  - text: "Did that help you ?"
 
   utter_goodbye:
   - text: "拜拜"
