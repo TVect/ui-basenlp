@@ -19,7 +19,7 @@ class CrawlerPart(object):
         headers = {"User-Agent": self.user_agent.random_user_agent}
         page = requests.get(self.base_url, headers=headers)
         if page.status_code != requests.codes.ok:
-            logging.info("url: %s, code: %s" % (cur_url, page.status_code))
+            logging.info("url: %s, code: %s" % (page.url, page.status_code))
         tree = html.fromstring(page.text)
         
         # bodypart
