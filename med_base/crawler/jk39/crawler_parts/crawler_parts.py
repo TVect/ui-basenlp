@@ -52,9 +52,9 @@ def dump_parts():
     import sys
     sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/../../../../")
     from med_base.storage.neo4j.models import Bodypart, Department
-
+    from conf.settings import NEO4J_URI
     from py2neo import Graph
-    graph = Graph("bolt://neo4j:123456@192.168.10.132:7687")
+    graph = Graph(NEO4J_URI)
 
     cp = CrawlerPart()
     for dt, dd in cp.crawler_bodyparts():
@@ -72,7 +72,7 @@ def dump_parts():
         depart_dt.name = dt
         depart_dd = Department()
         depart_dd.name = dd
-        depart_dd.partof.add(body_dt)
+        depart_dd.partof.add(depart_dt)
         graph.push(depart_dd)
 
 

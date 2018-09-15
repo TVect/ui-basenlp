@@ -70,21 +70,3 @@ class Disease(GraphObject):
     related_drugs = RelatedTo('Drug')
     related_operations = RelatedTo('Operation')
     related_diseases = Related('Disease')
-
-
-if __name__ == "__main__":
-    from py2neo import Graph
-    graph = Graph("bolt://neo4j:123456@192.168.10.132:7687")
-
-    di = Disease()
-    di.name = "Hello-1"
-
-    body = Bodypart()
-    body.name = "test-1"
-    di.related_bodypart.add(body)
-
-    body = Bodypart()
-    body.name = "test-2"
-    di.related_bodypart.add(body)
-
-    graph.push(di)
