@@ -44,6 +44,7 @@ class Operation(GraphObject):
     id = Property()  
 
     related_bodypart = RelatedTo('Bodypart')
+    related_departs = RelatedTo("Department")
 
 
 class Examination(GraphObject):

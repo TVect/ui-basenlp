@@ -27,7 +27,6 @@ class CrawlerSymptoms(object):
                 continue
             tree = html.fromstring(page.text)
 
-            # bodypart
             body_items = tree.xpath('//*[@id="res_subtab_1"]/div/dl/dt/h3/a')
             if body_items:
                 for item in body_items:
@@ -56,8 +55,9 @@ def dump_symptoms():
     from elasticsearch_dsl.connections import connections
 
     from py2neo import Graph
-    graph = Graph("bolt://neo4j:123456@192.168.10.132:7687")
-    connections.create_connection(hosts=['192.168.10.132'])
+    from conf.settings import NEO4J_URI, ES_HOST
+    graph = Graph(NEO4J_URI)
+    connections.create_connection(hosts=[ES_HOST])
 
     cp = CrawlerSymptoms()
     for name, describe, source_url in cp.process():
