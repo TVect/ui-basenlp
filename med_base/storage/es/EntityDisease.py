@@ -6,7 +6,7 @@ class EntityDisease(DocType):
     name = Keyword()
     describe = Text(analyzer='ik_max_word')
     alias = Keyword()
-    is_infect = Boolean()
+    is_infect = Text()
     highrisk_group = Text()
     source_url = Text()
     treatment_cycle = Text()
