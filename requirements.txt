@@ -3,3 +3,4 @@ aiml==0.9.1
 WeRoBot==1.6.0
 elasticsearch-dsl==5.4.0
 py2neo==4.1.0
+scrapy==1.5.1
