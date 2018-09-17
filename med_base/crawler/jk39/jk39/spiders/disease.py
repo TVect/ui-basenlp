@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
+import re
 from w3lib.html import remove_tags
 from jk39.items import DiseaseItem, ExamItem, DrugItem, OperationItem
 
@@ -11,7 +12,6 @@ class DiseaseSpider(scrapy.Spider):
 
 
     def parse(self, response):
-        self.logger.info('Parse function called on {}'.format(response.url))
         body_items = response.xpath('//*[@id="res_tab_2"]/div/dl/dt/h3/a')
         if body_items:
             for body_item in body_items:
@@ -47,29 +47,43 @@ class DiseaseSpider(scrapy.Spider):
             elif "治疗费用" in key:
                 meta_dict["treatment_cost"] = info_item.xpath('text()').extract_first()
             elif "相关症状" in key:
-                meta_dict["related_symptoms"] = info_item.xpath('a/@title').extract()
+                # meta_dict["related_symptom"] = info_item.xpath('a/@title').extract()
+                meta_dict["related_symptom"] = [response.urljoin(url_path) 
+                                                for url_path in info_item.xpath('a[not(contains(text(), "详细"))]/@href').extract()]
             elif "并发疾病" in key:
-                meta_dict["related_diseases"] = info_item.xpath('a/@title').extract()
+                # meta_dict["related_disease"] = info_item.xpath('a/@title').extract()
+                meta_dict["related_disease"] = [response.urljoin(url_path) 
+                                                for url_path in info_item.xpath('a[not(contains(text(), "详细"))]/@href').extract()]
             elif "部位" in key:
-                meta_dict["related_bodypart"] = info_item.xpath('a/text()').extract()
+                # meta_dict["related_bodypart"] = info_item.xpath('a/text()').extract()
+                meta_dict["related_bodypart"] = [response.urljoin(url_path) 
+                                                for url_path in info_item.xpath('a[not(contains(text(), "详细"))]/@href').extract()]
             elif "科室" in key:
-                meta_dict["related_departs"] = info_item.xpath('a/text()').extract()
+                # meta_dict["related_depart"] = info_item.xpath('a/text()').extract()
+                meta_dict["related_depart"] = [response.urljoin(url_path) 
+                                                for url_path in info_item.xpath('a[not(contains(text(), "详细"))]/@href').extract()]
             elif "检查" in key:
-                meta_dict["related_exams"] = info_item.xpath('a/@title').extract()
-                for exam_url in info_item.xpath('a[not(contains(text(), "详细"))]/@href').extract():
+                # meta_dict["related_exam"] = info_item.xpath('a/@title').extract()
+                meta_dict["related_exam"] = [response.urljoin(url_path) 
+                                             for url_path in info_item.xpath('a[not(contains(text(), "详细"))]/@href').extract()]
+                for exam_url in meta_dict['related_exam']:
                     yield scrapy.Request(exam_url, 
                                          callback=self.parse_exams, 
                                          meta={"disease_name": meta_dict["name"]})
             elif "药品" in key:
-                meta_dict["related_drugs"] = info_item.xpath('a/@title').extract()
-                for drug_url in info_item.xpath('a[not(contains(text(), "详细"))]/@href').extract():
+                # meta_dict["related_drug"] = info_item.xpath('a/@title').extract()
+                meta_dict["related_drug"] = [response.urljoin(url_path) 
+                                             for url_path in info_item.xpath('a[not(contains(text(), "详细"))]/@href').extract()]
+                for drug_url in meta_dict["related_drug"]:
                     if "ypk.39.net" in drug_url:
                         yield scrapy.Request(drug_url, 
                                              callback=self.parse_drugs, 
                                              meta={"disease_name": meta_dict["name"]})                
             elif "手术" in key:
-                meta_dict["related_operations"] = info_item.xpath('a/@title').extract()
-                for operation_url in info_item.xpath('a[not(contains(text(), "详细"))]/@href').extract():
+                # meta_dict["related_operation"] = info_item.xpath('a/@title').extract()
+                meta_dict["related_operation"] = [response.urljoin(url_path) 
+                                                  for url_path in info_item.xpath('a[not(contains(text(), "详细"))]/@href').extract()]
+                for operation_url in meta_dict["related_operation"]:
                     yield scrapy.Request(operation_url, 
                                          callback=self.parse_operations, 
                                          meta={"disease_name": meta_dict["name"]})
@@ -78,7 +92,6 @@ class DiseaseSpider(scrapy.Spider):
 
 
     def parse_exams(self, response):
-        return
         describe = response.xpath('//*[@id="intro"]/span/p').get()
         if describe:
             describe = remove_tags(describe)
@@ -91,10 +104,13 @@ class DiseaseSpider(scrapy.Spider):
             info_key = info_item.xpath("b/text()").extract_first()
             if info_key:
                 if "检查部位" in info_key:
-                    meta_dict["related_bodypart"] = info_item.xpath("a/text()").extract()
+                    # meta_dict["related_bodypart"] = info_item.xpath("a/text()").extract()
+                    meta_dict["related_bodypart"] = [response.urljoin(url_path) 
+                                                     for url_path in info_item.xpath("a/@href").extract()]
                     break
         
-        meta_dict["related_diseases"] = response.xpath('//*[@id="refdisease"]/div[@class="listBox"]/div/div/ul/li/a/text()').extract()
+        meta_dict["related_disease"] = [response.urljoin(url_path) for url_path in 
+                                        response.xpath('//*[@id="refdisease"]/div[@class="listBox"]/div/div/ul/li/a/@href').extract()]
 
         yield ExamItem(**meta_dict)
 
@@ -103,20 +119,20 @@ class DiseaseSpider(scrapy.Spider):
         name = response.xpath('//div[@class="yps_top"]/div[1]/h1/a/text()').extract_first()
         meta_dict = {"source_url": response.url, "name": name}
     
-        for info_item in response.xpath('//div[@class="ps"]/p'):
-            key = info_item.xpath('strong/text()').extract_first()
-            if "分" in key:
-                meta_dict["composition"] = remove_tags(info_item.get()).strip()
-            elif ("适应症" in key) or ("主治" in key):
-                meta_dict["indication"] = remove_tags(info_item.get()).strip()
-            elif "用法" in key:
-                meta_dict["usage"] = remove_tags(info_item.get()).strip()
-        
+#         for info_item in response.xpath('//div[@class="ps"]/p'):
+#             key = info_item.xpath('strong/text()').extract_first()
+#             if "分" in key:
+#                 meta_dict["composition"] = remove_tags(re.sub(r'<strong>[\s\S]+</strong>', "", info_item.get())).strip()
+#                 break
+#             elif ("适应症" in key) or ("主治" in key):
+#                 meta_dict["indication"] = remove_tags(info_item.get()).strip()
+#             elif "用法" in key:
+#                 meta_dict["usage"] = remove_tags(info_item.get()).strip()
+
         yield DrugItem(**meta_dict)
 
     
     def parse_operations(self, response):
-        return
         describe = response.xpath('//*[@id="intro"]/span/p').get()
         if describe:
             describe = remove_tags(describe)
@@ -128,8 +144,10 @@ class DiseaseSpider(scrapy.Spider):
             info_key = info_item.xpath("b/text()").extract_first()
             if info_key:
                 if "手术部位" in info_key:
-                    meta_dict["related_bodypart"] = info_item.xpath("a/text()").extract_first().strip()
+                    meta_dict["related_bodypart"] = [response.urljoin(url_path) 
+                                                     for url_path in info_item.xpath("a/@href").extract()]
                 elif "科室" in info_key:
-                    meta_dict["related_departs"] = info_item.xpath("a/text()").extract_first().strip()
+                    meta_dict["related_depart"] = [response.urljoin(url_path) 
+                                                   for url_path in info_item.xpath("a/@href").extract()]
 
         yield OperationItem(**meta_dict)
