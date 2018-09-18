@@ -7,7 +7,6 @@
 
 import scrapy
 
-
 class DiseaseItem(scrapy.Item):
     # define the fields for your item here like:
     name = scrapy.Field()
@@ -52,3 +51,9 @@ class OperationItem(scrapy.Item):
 
     related_depart = scrapy.Field()
     related_bodypart = scrapy.Field()
+
+
+class SymptomItem(scrapy.Item):
+    name = scrapy.Field()
+    describe = scrapy.Field()
+    source_url = scrapy.Field()

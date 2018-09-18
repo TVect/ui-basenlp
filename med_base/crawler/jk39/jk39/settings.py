@@ -88,11 +88,9 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'jk39.pipelines.GeneralItemPipeline': 100,
-#     'jk39.pipelines.DiseaseItemPipeline': 101,
-#     'jk39.pipelines.ExamItemPipeline': 102,
-#     'jk39.pipelines.DrugItemPipeline': 103,
-#     'jk39.pipelines.OperationItemPipeline': 104,
+#     'jk39.general_pipelines.GeneralItemPipeline': 100,
+#     'jk39.pipelines.EntityItemPipeline': 101,
+    'jk39.pipelines.RelationItemPipeline': 102,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -121,3 +119,4 @@ LOG_LEVEL= 'INFO'
 LOG_FILE = None
 
 OUT_FILE = "diseases.nt"
+RELATION_FILE = "relations.nt"

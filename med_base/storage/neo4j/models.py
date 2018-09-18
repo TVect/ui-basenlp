@@ -44,7 +44,7 @@ class Operation(GraphObject):
     id = Property()  
 
     related_bodypart = RelatedTo('Bodypart')
-    related_departs = RelatedTo("Department")
+    related_depart = RelatedTo("Department")
 
 
 class Examination(GraphObject):
@@ -64,10 +64,10 @@ class Disease(GraphObject):
     name = Property()
     id = Property()
 
-    related_symptoms = RelatedTo('Symptom')
-    related_departs = RelatedTo('Department')
+    related_symptom = RelatedTo('Symptom')
+    related_depart = RelatedTo('Department')
     related_bodypart = RelatedTo('Bodypart')
-    related_exams = RelatedTo('Examination')
-    related_drugs = RelatedTo('Drug')
-    related_operations = RelatedTo('Operation')
-    related_diseases = Related('Disease')
+    related_exam = RelatedTo('Examination')
+    related_drug = RelatedTo('Drug')
+    related_operation = RelatedTo('Operation')
+    related_disease = Related('Disease')

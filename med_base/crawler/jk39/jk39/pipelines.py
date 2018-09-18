@@ -5,149 +5,127 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
-from jk39.items import DiseaseItem, ExamItem, DrugItem, OperationItem
+
+import hashlib
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/../../../../")
+
+from med_base.storage.es.models import EntityDisease, EntityBodypart, EntityDepartment, \
+                            EntityDrug, EntityExam, EntityOperation, EntitySymptom
+
+from elasticsearch_dsl.connections import connections
+from conf.settings import ES_HOST
+
+connections.create_connection(hosts=[ES_HOST])
 
 
-class GeneralItemPipeline(object):
+from jk39.items import DiseaseItem, ExamItem, DrugItem, OperationItem, SymptomItem
+
+
+class EntityItemPipeline(object):
+
+    def process_item(self, item, spider):
+        if isinstance(item, DiseaseItem):
+            spider.logger.info('====== SAVE A Entity Disease: name={} ======'.format(item.get('name', '').strip()))
+            meta_dict = {}
+            for key in ['name', 'describe', 'is_infect', 'highrisk_group', 
+                        'source_url', 'treatment_cycle', 'treatment_cost']:
+                if item.get(key, '').strip():
+                    meta_dict[key] = item.get(key, '').strip()
+            disease_item = EntityDisease(**meta_dict)
+            disease_item.save()
+        elif isinstance(item, ExamItem):
+            spider.logger.info('====== SAVE A Entity Exam: name={} ======'.format(item.get('name', '').strip()))
+            meta_dict = {}
+            for key in ['name', 'describe', 'source_url']:
+                if item.get(key, '').strip():
+                    meta_dict[key] = item.get(key, '').strip()
+            exam_item = EntityExam(**meta_dict)
+            exam_item.save()
+        elif isinstance(item, DrugItem):
+            spider.logger.info('====== SAVE A Entity Drug: name={} ======'.format(item.get('name', '').strip()))
+            meta_dict = {}
+            for key in ['name', 'source_url']:
+                if item.get(key, '').strip():
+                    meta_dict[key] = item.get(key, '').strip()
+            drug_item = EntityDrug(**item)
+            drug_item.save()
+        elif isinstance(item, OperationItem):
+            spider.logger.info('====== SAVE A Entity Operation: name={} ======'.format(item.get('name', '').strip()))
+            meta_dict = {}
+            for key in ['name', 'describe', 'source_url']:
+                if item.get(key, '').strip():
+                    meta_dict[key] = item.get(key, '').strip()
+            operation_item = EntityOperation(**meta_dict)
+            operation_item.save()
+        elif isinstance(item, SymptomItem):
+            pass
+        yield item
+
+
+class RelationItemPipeline(object):
     
-    def __init__(self, out_file):
-        self.out_file = out_file
+    def __init__(self, relation_file):
+        self.relation_file = relation_file
 
 
     @classmethod
     def from_crawler(cls, crawler):
-        return cls(out_file=crawler.settings.get('OUT_FILE'))
+        return cls(relation_file=crawler.settings.get('RELATION_FILE'))
 
 
     def process_item(self, item, spider):
-        with open(self.out_file, 'a') as fw:
+        with open(self.relation_file, 'a') as fw:
             if isinstance(item, DiseaseItem):
-                spider.logger.info('====== SAVE A Disease: name={} ======'.format(item.get('name', '').strip()))
-                if item.get('name', '').strip():
-                    fw.write('<{}> <http://wowjoy.com/disease/name> "{}" .\n'.\
-                             format(item.get('source_url'), item.get('name').strip()))
-                if item.get('describe', '').strip():
-                    fw.write('<{}> <http://wowjoy.com/disease/describe> "{}" .\n'.\
-                             format(item.get('source_url'), item.get('describe').strip()))
-                if item.get('is_infect', '').strip():
-                    fw.write('<{}> <http://wowjoy.com/disease/is_infect> "{}" .\n'.\
-                             format(item.get('source_url'), item.get('is_infect').strip()))
-                if item.get('highrisk_group', '').strip():
-                    fw.write('<{}> <http://wowjoy.com/disease/highrisk_group> "{}" .\n'.\
-                             format(item.get('source_url'), item.get('highrisk_group').strip()))
-                if item.get('treatment_cycle', '').strip():
-                    fw.write('<{}> <http://wowjoy.com/disease/treatment_cycle> "{}" .\n'.\
-                             format(item.get('source_url'), item.get('treatment_cycle').strip()))
-                if item.get('treatment_cost', '').strip():
-                    fw.write('<{}> <http://wowjoy.com/disease/treatment_cost> "{}" .\n'.\
-                             format(item.get('source_url'), item.get('treatment_cost').strip()))
+                spider.logger.info('====== SAVE A Disease Relation: name={} ======'.format(item.get('name', '').strip()))
                 if item.get('related_symptom'):
                     for symptom in item.get('related_symptom'):
                         fw.write('<{}> <http://wowjoy.com/disease/related_symptom> <{}> .\n'.\
-                                 format(item.get('source_url'), symptom))
+                                 format(item.get('source_url').strip(), symptom))
                 if item.get('related_disease'):
                     for disease in item.get('related_disease'):
                         fw.write('<{}> <http://wowjoy.com/disease/related_disease> <{}> .\n'.\
-                                 format(item.get('source_url'), disease))
+                                 format(item.get('source_url').strip(), disease))
                 if item.get('related_bodypart'):
                     for bodypart in item.get('related_bodypart'):
                         fw.write('<{}> <http://wowjoy.com/disease/related_bodypart> <{}> .\n'.\
-                                 format(item.get('source_url'), bodypart))
+                                 format(item.get('source_url').strip(), bodypart))
                 if item.get('related_depart'):
                     for depart in item.get('related_depart'):
                         fw.write('<{}> <http://wowjoy.com/disease/related_depart> <{}> .\n'.\
-                                 format(item.get('source_url'), depart))
+                                 format(item.get('source_url').strip(), depart))
                 if item.get('related_exam'):
                     for exam in item.get('related_exam'):
                         fw.write('<{}> <http://wowjoy.com/disease/related_exam> <{}> .\n'.\
-                                 format(item.get('source_url'), exam))
+                                 format(item.get('source_url').strip(), exam))
                 if item.get('related_drug'):
                     for drug in item.get('related_drug'):
                         fw.write('<{}> <http://wowjoy.com/disease/related_drug> <{}> .\n'.\
-                                 format(item.get('source_url'), drug))
+                                 format(item.get('source_url').strip(), drug))
                 if item.get('related_operation'):
                     for operation in item.get('related_operation'):
                         fw.write('<{}> <http://wowjoy.com/disease/related_operation> <{}> .\n'.\
-                                 format(item.get('source_url'), operation))
+                                 format(item.get('source_url').strip(), operation))
             elif isinstance(item, ExamItem):
-                spider.logger.info('====== SAVE A Exam: name={} ======'.format(item.get('name', '').strip()))
-                if item.get('name', '').strip():
-                    fw.write('<{}> <http://wowjoy.com/exam/name> "{}" .\n'.\
-                             format(item.get('source_url'), item.get('name').strip()))
-                if item.get('describe', '').strip():
-                    fw.write('<{}> <http://wowjoy.com/exam/describe> "{}" .\n'.\
-                             format(item.get('source_url'), item.get('describe').strip()))
+                spider.logger.info('====== SAVE A Exam Relation: name={} ======'.format(item.get('name', '').strip()))
                 if item.get('related_bodypart'):
                     for bodypart in item.get('related_bodypart'):
                         fw.write('<{}> <http://wowjoy.com/exam/related_bodypart> <{}> .\n'.\
-                                 format(item.get('source_url'), bodypart))
+                                 format(item.get('source_url').strip(), bodypart))
                 if item.get('related_disease'):
                     for disease in item.get('related_disease'):
                         fw.write('<{}> <http://wowjoy.com/exam/related_disease> <{}> .\n'.\
-                                 format(item.get('source_url'), disease))
+                                 format(item.get('source_url').strip(), disease))
             elif isinstance(item, DrugItem):
-                spider.logger.info('====== SAVE A Drug: name={} ======'.format(item.get('name', '').strip()))
-                if item.get('name', '').strip():
-                    fw.write('<{}> <http://wowjoy.com/drug/name> "{}" .\n'.\
-                             format(item.get('source_url'), item.get('name').strip()))
-                if item.get('composition', '').strip():
-                    fw.write('<{}> <http://wowjoy.com/drug/composition> "{}" .\n'.\
-                             format(item.get('source_url'), item.get('composition').strip()))
-#                 if item.get('indication', '').strip():
-#                     fw.write('<{}> <http://wowjoy.com/drug/indication> "{}" .\n'.\
-#                              format(item.get('source_url'), item.get('indication').strip()))
-#                 if item.get('usage', '').strip():
-#                     fw.write('<{}> <http://wowjoy.com/drug/usage> "{}" .\n'.\
-#                              format(item.get('source_url'), item.get('usage').strip()))
+                pass
             elif isinstance(item, OperationItem):
-                spider.logger.info('====== SAVE A Operation: name={} ======'.format(item.get('name', '').strip()))
-                if item.get('name', '').strip():
-                    fw.write('<{}> <http://wowjoy.com/operation/name> "{}" .\n'.\
-                             format(item.get('source_url'), item.get('name').strip()))
-                if item.get('describe', '').strip():
-                    fw.write('<{}> <http://wowjoy.com/operation/describe> "{}" .\n'.\
-                             format(item.get('source_url'), item.get('describe').strip()))
+                spider.logger.info('====== SAVE A Operation Relation: name={} ======'.format(item.get('name', '').strip()))
                 if item.get('related_depart'):
                     for depart in item.get('related_depart'):
                         fw.write('<{}> <http://wowjoy.com/operation/related_depart> <{}> .\n'.\
-                                 format(item.get('source_url'), depart))
+                                 format(item.get('source_url').strip(), depart))
                 if item.get('related_bodypart'):
                     for bodypart in item.get('related_bodypart'):
                         fw.write('<{}> <http://wowjoy.com/operation/related_bodypart> <{}> .\n'.\
-                                 format(item.get('source_url'), bodypart))
-
-
-class DiseaseItemPipeline(object):
-
-    def process_item(self, item, spider):
-        if item is DiseaseItem:
-            print('save a DiseaseItem')
-        else:
-            return item
-
-
-class ExamItemPipeline(object):
-
-    def process_item(self, item, spider):
-        if item is ExamItem:
-            print('save a ExamItem')
-        else:
-            return item
-
-
-class DrugItemPipeline(object):
-
-    def process_item(self, item, spider):
-        if item is DrugItem:
-            print('save a DrugItem')
-        else:
-            return item
-
-
-class OperationItemPipeline(object):
-
-    def process_item(self, item, spider):
-        if item is OperationItem:
-            print('save a OperationItem')
-        else:
-            return item
+                                 format(item.get('source_url').strip(), bodypart))

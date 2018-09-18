@@ -2,7 +2,7 @@
 import scrapy
 import re
 from w3lib.html import remove_tags
-from jk39.items import DiseaseItem, ExamItem, DrugItem, OperationItem
+from jk39.items import DiseaseItem, ExamItem, DrugItem, OperationItem, SymptomItem
 
 
 class DiseaseSpider(scrapy.Spider):
@@ -151,3 +151,8 @@ class DiseaseSpider(scrapy.Spider):
                                                    for url_path in info_item.xpath("a/@href").extract()]
 
         yield OperationItem(**meta_dict)
+
+
+    def parse_symptoms(self, response):
+        meta_dict = {}
+        yield SymptomItem(**meta_dict)
