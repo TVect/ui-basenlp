@@ -18,7 +18,7 @@ class CrawlerSymptoms(object):
     def process(self):
         headers = {"User-Agent": self.user_agent.random_user_agent}
 
-        page_id = 0
+        page_id = 194
         while True:
             logging.info("====== page_id = {}".format(page_id))
             page = requests.get(self.base_url.format(page_id), headers=headers)
@@ -51,7 +51,7 @@ def dump_symptoms():
     import sys
     sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/../../../../")
     from med_base.storage.neo4j.models import Symptom
-    from med_base.storage.es.EntitySymptom import EntitySymptom
+    from med_base.storage.es.models import EntitySymptom
     from elasticsearch_dsl.connections import connections
 
     from py2neo import Graph
@@ -65,10 +65,15 @@ def dump_symptoms():
         entity_symptom = EntitySymptom(name=name, describe=describe, source_url=source_url)
         entity_symptom.save()
 
-        symptom = Symptom()
-        symptom.name = name
-        symptom.id = str(entity_symptom._id)
-        graph.push(symptom)
+        symptom_node = Symptom.match(graph).where(name=name).first()
+        if symptom_node:
+            pass
+        else:
+            symptom = Symptom()
+            symptom.name = name
+            symptom.id = str(entity_symptom._id)
+            graph.push(symptom)
+
 
 if __name__ == "__main__":
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)

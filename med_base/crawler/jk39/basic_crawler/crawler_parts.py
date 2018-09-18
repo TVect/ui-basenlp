@@ -1,7 +1,15 @@
 import logging
 import requests
 import user_agent
+import urllib
+import hashlib
 from lxml import html
+
+def to_uuid(in_str):
+    hl = hashlib.md5()
+    hl.update(in_str.encode(encoding="utf-8"))
+    return hl.hexdigest()
+
 
 class CrawlerPart(object):
 
@@ -26,9 +34,12 @@ class CrawlerPart(object):
         body_items = tree.xpath('//*[@id="cond_box1"]/dl')
         if body_items:
             for item in body_items:
-                dt = item.xpath("dt/a")[0].text
+                dt_name = item.xpath("dt/a")[0].text
+                dt_url = urllib.parse.urljoin(page.url, item.xpath("dt/a/@href")[0].strip())
                 for dd in item.xpath("dd/a"):
-                    yield dt, dd.text
+                    dd_name = dd.text
+                    dd_url = urllib.parse.urljoin(page.url, dd.xpath('@href')[0].strip())
+                    yield dt_name, dt_url, dd_name, dd_url
 
 
     def crawler_departments(self):
@@ -42,9 +53,12 @@ class CrawlerPart(object):
         departs = tree.xpath('//*[@id="cond_box2"]/dl')
         if departs:
             for depart in departs:
-                dt = depart.xpath("dt/a")[0].text
+                dt_name = depart.xpath("dt/a")[0].text
+                dt_url = urllib.parse.urljoin(page.url, depart.xpath("dt/a/@href")[0].strip())
                 for dd in depart.xpath("dd/a"):
-                    yield dt, dd.text
+                    dd_name = dd.text
+                    dd_url = urllib.parse.urljoin(page.url, dd.xpath('@href')[0].strip())
+                    yield dt_name, dt_url, dd_name, dd_url
 
 
 def dump_parts():
@@ -57,21 +71,29 @@ def dump_parts():
     graph = Graph(NEO4J_URI)
 
     cp = CrawlerPart()
-    for dt, dd in cp.crawler_bodyparts():
-        print(dt, dd)
+    for dt_name, dt_url, dd_name, dd_url in cp.crawler_bodyparts():
+        print(dt_name, dt_url, dd_name, dd_url)
         body_dt = Bodypart()
-        body_dt.name = dt
+        body_dt.name = dt_name
+        body_dt.id = to_uuid(dt_url)
+         
         body_dd = Bodypart()
-        body_dd.name = dd
+        body_dd.name = dd_name
+        body_dd.id = to_uuid(dd_url)
+         
         body_dd.partof.add(body_dt)
         graph.push(body_dd)
 
-    for dt, dd in cp.crawler_departments():
-        print(dt, dd)
+    for dt_name, dt_url, dd_name, dd_url in cp.crawler_departments():
+        print(dt_name, dt_url, dd_name, dd_url)
         depart_dt = Department()
-        depart_dt.name = dt
+        depart_dt.name = dt_name
+        depart_dt.id = to_uuid(dt_url)
+         
         depart_dd = Department()
-        depart_dd.name = dd
+        depart_dd.name = dd_name
+        depart_dd.id = to_uuid(dd_url)
+         
         depart_dd.partof.add(depart_dt)
         graph.push(depart_dd)
 
