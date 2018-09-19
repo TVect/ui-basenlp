@@ -4,3 +4,5 @@ WeRoBot==1.6.0
 elasticsearch-dsl==5.4.0
 py2neo==4.1.0
 scrapy==1.5.1
+jieba==0.39
+REfO==0.13

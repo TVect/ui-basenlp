@@ -13,7 +13,7 @@ from med_base.storage.es.models import EntityDisease, EntityBodypart, EntityDepa
 from elasticsearch_dsl.connections import connections
 from py2neo import Graph
 from conf.settings import NEO4J_URI, ES_HOST
-from med_base.crawler.jk39.jk39.settings import USER_AGENT_LIST
+
 
 graph = Graph(NEO4J_URI)
 connections.create_connection(hosts=[ES_HOST])
