@@ -2,6 +2,7 @@ from refo import finditer, Predicate, Star, Any, Disjunction, Plus
 import re
 import copy
 
+import actions
 
 class Word(object):
     def __init__(self, token, pos):
@@ -28,18 +29,29 @@ class Rule(object):
         self.action = action
 
     def apply(self, sentence):
+        matches = []
         for m in finditer(self.condition, sentence):
             i, j = m.span()
-            if "victim" in m:
-                i, j = m.span("victim")
-            self.action(sentence[i:j])
+            matches.extend(sentence[i:j])
+        if matches:
+            return self.action(matches)
 
 
-def action_test(word_objects):
-    for word_obj in word_objects:
-        print(word_obj.token, word_obj.pos)
+entity_drug = W(pos="nz-entity_drug")
+entity_disease = W(pos="nz-entity_disease")
+keyword_disease = (W(token="疾病") | W(token="病"))
+keyword_drug = (W(token="药") | W(token="药品") | W(token="药物"))
 
 
-entity_disease = W(pos="nz-entity_drug")
-
-basic_rules = [Rule(condition=Star(Any(),greedy=True) + entity_disease + Star(Any(),greedy=False), action=action_test)]
+basic_rules = [Rule(condition=Star(Any(),greedy=False) + keyword_disease + Star(Any(),greedy=True) + 
+                            entity_drug + Star(Any(),greedy=False), 
+                    action=actions.action_drug2disease), # 寻找药品对应的疾病
+               Rule(condition=Star(Any(),greedy=False) + entity_drug + Star(Any(),greedy=False) + 
+                            keyword_disease + Star(Any(),greedy=False), # 寻找药品对应的疾病
+                    action=actions.action_drug2disease),
+               Rule(condition=Star(Any(),greedy=False) + entity_disease + Star(Any(),greedy=False) + 
+                            keyword_drug + Star(Any(),greedy=False),
+                    action=actions.action_disease2drug),
+               Rule(condition=Star(Any(),greedy=False) + keyword_drug + Star(Any(),greedy=False) + 
+                            entity_disease + Star(Any(),greedy=False),
+                    action=actions.action_disease2drug)]

@@ -2,6 +2,7 @@ import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/../../")
 
+import random
 import codecs
 import jieba
 import jieba.posseg as pseg
@@ -27,16 +28,15 @@ for filename in os.listdir("user_dict"):
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search
 
-client = Elasticsearch(hosts=[ES_HOST])
-
 
 class QueryParser:
     
     def __init__(self):
-        pass
+        self.client = Elasticsearch(hosts=[ES_HOST])
     
     
-    def parse(self, sentence):
+    def nl2query(self, sentence):
+        ''' 自然语言转查询表达式 '''
         tokens = pseg.lcut(sentence)
         words = []
         for idx, token in enumerate(tokens):
@@ -46,13 +46,18 @@ class QueryParser:
                     tokens[idx].flag = "nz-{}".format(recog_token[0])
                     tokens[idx].word = recog_token[1]
         words = [Word(token=token.word, pos=token.flag) for token in tokens]
+        print("parsed: ", tokens)
+        candi_queries = []
         for rule in basic_rules:
-            rule.apply(words)
-        return tokens
+            ret = rule.apply(words)
+            if ret:
+                candi_queries.append(rule.apply(words))
+        if candi_queries:
+            return random.choice(candi_queries)
 
 
     def recognize_type(self, name):
-        s = Search(using=client, index="med_base").query("match", name=name)
+        s = Search(using=self.client, index="med_base").query("match", name=name)
         response = s.execute()
 
         for hit in response:
@@ -62,7 +67,7 @@ class QueryParser:
 
 if __name__ == "__main__":
     qp = QueryParser()
-    print(qp.parse("什么病要吃定坤丹?"))
+    print(qp.nl2query("什么病要吃定坤丹?"))
 #     print(qp.parse("尿路感染要做手术吗?"))
 #     print(qp.parse("头痛怎么办"))
 #     print(qp.parse("头老是痛怎么办?"))
