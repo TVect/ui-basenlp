@@ -30,6 +30,8 @@ eg.1 我想看杭州和上海的天气. request_weather {"city": "杭州", "city
 
 eg.2 我想看杭州和上海的. inform {"city": "杭州", "city": "上海"} 
 
-eg.3 我想看杭州到上海的列车还有上海的天气. ??????
+eg.3 我想看杭州到上海的列车还有上海的天气. request_trains & request_weather 
+
+	(在 rasa_nlu 中可以使用 tensorflow_embedding 实现 multi-intents 功能)
 
 eg.4 我想看餐馆的电话号码和地址. request [phone_num, address]
