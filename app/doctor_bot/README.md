@@ -35,3 +35,5 @@ eg.3 我想看杭州到上海的列车还有上海的天气. request_trains & re
 	(在 rasa_nlu 中可以使用 tensorflow_embedding 实现 multi-intents 功能)
 
 eg.4 我想看餐馆的电话号码和地址. request [phone_num, address]
+
+- 如何做 SlotReset 的操作?

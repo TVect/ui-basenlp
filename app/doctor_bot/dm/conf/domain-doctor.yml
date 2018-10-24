@@ -1,0 +1,64 @@
+intents:
+  - greet
+  - goodbye
+  - thanks
+  - affirm
+  - deny
+  - inform
+  - request_doctor
+  - request_schedule
+  - request_disease
+  - request_department
+  - make_appointment
+
+
+entities:
+  - time
+  - disease
+  - department
+  - symptom
+  - doctorname
+
+slots:
+  time:
+    type: text
+  disease:
+    type: text
+  department:
+    type: text
+  doctorname:
+    type: text
+  requested_slot:
+    type: unfeaturized
+
+actions:
+- utter_greet
+- utter_goodbye
+- utter_ask_morehelp
+- utter_ask_city
+- actions.ActionWeather
+- actions.StatisticFormAction
+
+templates:
+  utter_greet:
+  - text: "你好啊"
+  - text: "hello"
+
+  utter_goodbye:
+  - text: "拜拜"
+  - text: "再见"
+
+  utter_ask_morehelp:
+  - text: "还有什么其他的我可以帮您的吗 ?"
+  
+  utter_ask_disease:
+  - text: "请输入您感兴趣的疾病"
+  
+  utter_ask_time:
+  - text: "请输入一个时间(段)"
+  
+  utter_ask_city:
+  - text: "请输入一个城市名"
+
+  utter_default:
+  - text: "我很懵逼...我听不懂你在说什么..."
