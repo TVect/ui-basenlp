@@ -17,12 +17,18 @@ logger = logging.getLogger(__name__)
 # project_name = "doctor_bot"
 
 ##################  nlu_spacy_pipeline ##################
+# data_location = "./data/nlu.json"
+# nlu_config_file = "./conf/nlu_spacy_pipeline.yaml"
+# fixed_model_name = "nlu_spacy_pipeline"
+# model_path = "./models"
+# project_name = "doctor_bot"
+
+##################  nlu_spacy_pipeline ##################
 data_location = "./data/nlu.json"
-nlu_config_file = "./conf/nlu_spacy_pipeline.yaml"
-fixed_model_name = "nlu_spacy_pipeline"
+nlu_config_file = "./conf/nlu_tfembed_pipeline.yaml"
+fixed_model_name = "nlu_tfembed_pipeline"
 model_path = "./models"
 project_name = "doctor_bot"
-
 
 def train_nlu():
     '''
