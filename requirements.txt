@@ -6,3 +6,4 @@ py2neo==4.1.0
 scrapy==1.5.1
 jieba==0.39
 REfO==0.13
+SPARQLWrapper==1.8.2
