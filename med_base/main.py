@@ -1,7 +1,7 @@
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/../")
-from med_base.storage.neo4j.models import Disease
+from med_base.storage.neo4j.models import Disease, Department
 from med_base.storage.es.models import EntityDisease, EntityBodypart, EntityDepartment, \
             EntityDrug, EntityExam, EntityOperation, EntitySymptom
 from elasticsearch_dsl.connections import connections
@@ -42,16 +42,20 @@ def dump2nt_disease():
 
 
 def dump2nt_department():
-    t_entity = "http://wowjoy.cn/medbase/department/{}"
-    p_name = "http://wowjoy.cn/medbase/department/name"
-    p_source_url = "http://wowjoy.cn/medbase/department/source_url"
-
+    t_entity = "http://wowjoy.cn/medbase/depart/{}"
+    p_name = "http://wowjoy.cn/medbase/depart/name"
+    
+    for depart_item in Department.match(graph):
+        s_entity = t_entity.format(depart_item.id)
+        print('<{s}> <{p}> "{o}" .'.format(s=s_entity, p=p_name, o=depart_item.name))
+        
+    '''
     for department in EntityDepartment.search().scan():
-        s_entity = "http://wowjoy.cn/medbase/department/{}".format(department._id)
+        s_entity = "http://wowjoy.cn/medbase/depart/{}".format(department._id)
         print('<{s}> <{p}> "{o}" .'.format(s=s_entity, p=p_name, o=department.name))
         if department.source_url:
             print('<{s}> <{p}> "{o}" .'.format(s=s_entity, p=p_source_url, o=department.source_url))
-
+    '''
 
 def dump2nt_drug():
     t_entity = "http://wowjoy.cn/medbase/drug/{}"
@@ -59,7 +63,7 @@ def dump2nt_drug():
     p_source_url = "http://wowjoy.cn/medbase/drug/source_url"
 
     for drug in EntityDrug.search().scan():
-        s_entity = "http://wowjoy.cn/medbase/department/{}".format(drug._id)
+        s_entity = "http://wowjoy.cn/medbase/drug/{}".format(drug._id)
         print('<{s}> <{p}> "{o}" .'.format(s=s_entity, p=p_name, o=drug.name))
         if drug.source_url:
             print('<{s}> <{p}> "{o}" .'.format(s=s_entity, p=p_source_url, o=drug.source_url))
@@ -107,7 +111,7 @@ def dump2nt_symptom():
 def dump2nt_relations():
     entity_disease = "http://wowjoy.cn/medbase/disease/{}"
     entity_symptom = "http://wowjoy.cn/medbase/symptom/{}"
-    entity_depart = "http://wowjoy.cn/medbase/department/{}"
+    entity_depart = "http://wowjoy.cn/medbase/depart/{}"
     entity_exam = "http://wowjoy.cn/medbase/exam/{}"
     entity_drug = "http://wowjoy.cn/medbase/drug/{}"
     entity_operation = "http://wowjoy.cn/medbase/operation/{}"
