@@ -36,8 +36,6 @@ actions:
 - utter_goodbye
 - utter_ask_morehelp
 - utter_ask_city
-- actions.ActionWeather
-- actions.StatisticFormAction
 
 templates:
   utter_greet:
