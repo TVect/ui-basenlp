@@ -29,6 +29,9 @@ def make_app():
 if __name__ == "__main__":
     app = make_app()
     tornado.options.parse_command_line()
-    app.listen(options.port)
+    server = tornado.httpserver.HTTPServer(app)
+    server.bind(options.port)
+    server.start(0)    # forks one process per cpu
+
     logging.info("start server ......")
     tornado.ioloop.IOLoop.current().start()
